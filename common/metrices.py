@@ -24,6 +24,64 @@ class metrics:
     def f2_score(self, precision, recall):
         return 5 * precision * recall / (4 * precision + recall) if precision + recall > 0 else 0
 
+    def sort_df(self, arr, file_name):
+        issue_df = pd.read_csv("../trace/data/git_data/EVCommunities/Components/all-data/issue_file", index_col=[0])
+        commit_df = pd.read_csv("../trace/data/git_data/EVCommunities/Components/all-data/commit_file", index_col=[0])
+        output_directory = './confusion/EVCommunities/single'
+
+        df = pd.DataFrame(arr, columns=['s_id', 't_id', 'p', 'l'])
+
+        merged_issue = pd.merge(df, issue_df, left_on='s_id', right_index=True, how='left')
+
+        merged_commit = pd.merge(df, commit_df, left_on='t_id', right_index=True, how='left')
+
+        final_df = pd.merge(merged_issue, merged_commit, left_index=True, right_index=True)
+
+        final_df = final_df[['issue_id', 'commit_id', 'p_x', 'l_x', 'issue_desc', 'issue_comments', 'summary', 'files', 'created_at', 'closed_at', 'commit_time']]
+
+        if not os.path.exists(output_directory):
+            os.makedirs(output_directory)
+        print(file_name)
+        
+        final_df.to_csv(os.path.join(output_directory, file_name), index=False)
+        print(final_df)
+        
+    def sort_f1_details(self, threshold):
+        "Return ture positive (tp), fp, tn,fn "
+        f_name = "f1_details"
+        tp, fp, tn, fn = 0, 0, 0, 0
+        tp_arr, fp_arr, tn_arr, fn_arr = [], [], [], []
+
+        for s_id, t_id, p, l in zip(self.s_ids, self.t_ids, self.pred, self.label):
+            p_val, l_val = p, l
+            if p > threshold:
+                p = 1
+            else:
+                p = 0
+            if p == l:
+                if l == 1:
+                    tp += 1
+                    tp_arr.append((s_id, t_id, p_val, l_val))
+                else:
+                    tn += 1
+                    tn_arr.append((s_id, t_id, p_val, l_val))
+
+            else:
+                if l == 1:
+                    fn += 1
+                    fn_arr.append((s_id, t_id, p_val, l_val))
+                else:
+                    fp += 1
+                    fp_arr.append((s_id, t_id, p_val, l_val))
+
+        self.sort_df(tp_arr, 'tp.csv')
+        self.sort_df(fp_arr, 'fp.csv')
+        self.sort_df(tn_arr, 'tn.csv')
+        self.sort_df(fn_arr, 'fn.csv')
+       
+        return {"tp": tp, "fp": fp, "tn": tn, "fn": fn}
+
+
     def f1_details(self, threshold):
         "Return ture positive (tp), fp, tn,fn "
         f_name = "f1_details"
@@ -40,9 +98,9 @@ class metrics:
                     tn += 1
             else:
                 if l == 1:
-                    fp += 1
-                else:
                     fn += 1
+                else:
+                    fp += 1
         return {"tp": tp, "fp": fp, "tn": tn, "fn": fn}
 
     def precision_recall_curve(self, fig_name):
@@ -159,14 +217,20 @@ class metrics:
 
 if __name__ == "__main__":
     test = [
-        (1, 1, 0.8, 1),
+        (1, 1, 0.81, 1),
         (1, 2, 0.3, 0),
         (2, 1, 0.9, 1),
-        (2, 1, 0, 0),
-        (3, 1, 0.5, 0)
+        (2, 1, 1, 0),
+        (7, 8, 1, 0),
+        (3, 1, 0.5, 0),
+        (5, 6, 0.5, 0),
     ]
-    df = pd.DataFrame(test, columns=['s_id', 't_id', 'pred', 'label'])
+    
+    # df = pd.DataFrame(test, columns=['s_id', 't_id', 'pred', 'label'])
+    df = pd.read_csv('../trace/trace_single/evaluation/test/EVCommunities eval/raw_result.csv', index_col=[0])
     m = metrics(df)
-    m.precision_recall_curve('test.png')
+    m.output_dir = "./sample_tests"
+    # m.precision_recall_curve('test.png')
     print(m.precision_at_K(2))
     print(m.MAP_at_K(2))
+    print(m.sort_f1_details(0.999476969242096))
