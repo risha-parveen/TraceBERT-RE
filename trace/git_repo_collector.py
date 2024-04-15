@@ -121,12 +121,15 @@ class GitRepoCollector:
                 desc = ""
                 if issue.body:
                     desc = issue.body
-                issue_close_time = issue.closed_at
+                if (issue.closed_at):
+                    issue_close_time = issue.closed_at
+                else: issue_close_time = ""
                 issue_create_time = issue.created_at
                 for comment in issue.get_comments():
                     if comment.body:
                         comments.append(comment.body)
                 issue = Issue(issue_number, desc, "\n".join(comments), issue_create_time, issue_close_time)
+                
                 issue_df = issue_df.append(issue.to_dict(), ignore_index=True)
                 issue_df.to_csv(issue_file_path)
             except RateLimitExceededException:
