@@ -184,6 +184,12 @@ def split(issue, commit, links, proj_dir):
     write_split_chunk(issue, commit, valid_links, valid_dir)
     write_split_chunk(issue, commit, test_links, test_dir)
 
+def no_split(issue, commit, links, proj_dir):
+    all_dir = os.path.join(proj_dir, "all-data")
+    random.shuffle(links)
+    train_links = links[:]
+    write_split_chunk(issue, commit, train_links, all_dir)
+
 
 if __name__ == "__main__":
     logging.basicConfig()
@@ -191,7 +197,7 @@ if __name__ == "__main__":
     logger.setLevel("INFO")
     # projects = ['dbcli/pgcli']
     # projects = ['pallets/flask']
-    projects = ['dbcli/pgcli', 'pallets/flask', 'keras-team/keras']
+    projects = ['EVCommunities/Components']
 
     config = configparser.ConfigParser()
     config.read('credentials.cfg')
@@ -228,3 +234,4 @@ if __name__ == "__main__":
             clean_issue, clean_commits, clean_links = clean_artifacts(proj_data_dir)
         
         split(clean_issues, clean_commits, clean_links, proj_data_dir)
+        no_split(clean_issues, clean_commits, clean_links, proj_data_dir)

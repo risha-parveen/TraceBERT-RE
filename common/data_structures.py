@@ -259,7 +259,9 @@ class Examples:
 
     def _id_to_embd(self, id_tensor: Tensor, index):
         embds = []
+        print(id_tensor.tolist())
         for id in id_tensor.tolist():
+            #print(id)
             embds.append(index[id][F_EMBD])
         embd_tensor = torch.stack(embds)
         return embd_tensor

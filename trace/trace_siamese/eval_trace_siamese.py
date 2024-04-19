@@ -37,9 +37,9 @@ if __name__ == "__main__":
     logger.info("model loaded")
 
     start_time = time.time()
-    test_dir = os.path.join(args.data_dir, "test")
+    test_dir = os.path.join(args.data_dir, "all-data")
     test_examples = load_examples(test_dir, model=model, num_limit=args.test_num)
     test_examples.update_embd(model)
-    m = test(args, model, test_examples, cache_file="cached_siamese_test.dat")
+    m = test(args, model, test_examples, cache_file="siamese_test_cache2.dat")
     exe_time = time.time() - start_time
     m.write_summary(exe_time)
