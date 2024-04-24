@@ -68,11 +68,12 @@ class Examples:
 
     def __init__(self, raw_examples: List):
         self.NL_index, self.PL_index, self.rel_index = self.__index_exmaple(raw_examples)
+        self.label_index
 
     def __is_positive_case(self, nl_id, pl_id):
-        if nl_id not in self.rel_index:
+        if nl_id not in self.label_index:
             return False
-        rel_pls = set(self.rel_index[nl_id])
+        rel_pls = set(self.label_index[nl_id])
         return pl_id in rel_pls
 
     def __len__(self):
@@ -86,6 +87,7 @@ class Examples:
         :return:
         """
         rel_index = defaultdict(set)
+        label_index = defaultdict(set)
         NL_index = dict()  # find instance by id
         PL_index = dict()
 
@@ -94,28 +96,34 @@ class Examples:
         reverse_PL_index = dict()
 
         nl_id_max = 0
-        pl_id_max = 0
+        pl_id_max = 0  
+        nl_val_dict = {}
         for r_exp in raw_examples:
             nl_tks = clean_space(r_exp["NL"])
             pl_tks = r_exp["PL"]
-
             if nl_tks in reverse_NL_index:
                 nl_id = reverse_NL_index[nl_tks]
             else:
                 nl_id = nl_id_max
                 nl_id_max += 1
-
             if pl_tks in reverse_PL_index:
                 pl_id = reverse_PL_index[pl_tks]
             else:
                 pl_id = pl_id_max
                 pl_id_max += 1
+            
+            if nl_tks not in nl_val_dict:
+                nl_val_dict[nl_tks] = [nl_id]
+            else: nl_val_dict[nl_tks].append(nl_id)
 
             NL_index[nl_id] = {F_TOKEN: nl_tks, F_ID: nl_id}
             PL_index[pl_id] = {F_TOKEN: pl_tks, F_ID: pl_id}  # keep space for PL
             rel_index[nl_id].add(pl_id)
+            label_index[nl_id].update(nl_val_dict[nl_tks])
+            
             nl_id += 1
             pl_id += 1
+        self.label_index = label_index
         return NL_index, PL_index, rel_index
 
     def _gen_feature(self, example, tokenizer):
@@ -208,6 +216,7 @@ class Examples:
         :return:
         """
         rels = []
+        print(self.rel_index)
         for nid in self.rel_index:
             for pid in self.rel_index[nid]:
                 rels.append((nid, pid))
@@ -259,7 +268,6 @@ class Examples:
 
     def _id_to_embd(self, id_tensor: Tensor, index):
         embds = []
-        print(id_tensor.tolist())
         for id in id_tensor.tolist():
             #print(id)
             embds.append(index[id][F_EMBD])
