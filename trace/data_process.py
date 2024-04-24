@@ -155,6 +155,7 @@ def write_split_chunk(issue, commit, links, output_dir):
     link_file = os.path.join(output_dir, "link_file")
 
     sel_issues, sel_commits = [], []
+    print(issue, links)
     for iss_id, cm_id in links:
         cm = commit[cm_id]
         iss = issue[iss_id]
@@ -223,15 +224,18 @@ if __name__ == "__main__":
         
         clean_issue_file = os.path.join(proj_data_dir, 'clean_issue.csv')
         clean_commits_file = os.path.join(proj_data_dir, 'clean_commit.csv')
-        
+
+        clean_issues, clean_commits, clean_links = None, None, None
         if os.path.exists(clean_issue_file) and os.path.exists(clean_commits_file):
             # if the cleaned_issue.csv is available
             clean_issues = __read_artifact_dict(clean_issue_file, 'issue')
             clean_commits = __read_artifact_dict(clean_commits_file, 'commit')
             clean_links_file = os.path.join(proj_data_dir, 'clean_link.csv')
             clean_links = __read_artifacts(clean_links_file, 'link')
+            no_split(clean_issues, clean_commits, clean_links, proj_data_dir)
         else:
-            clean_issue, clean_commits, clean_links = clean_artifacts(proj_data_dir)
+            clean_issues, clean_commits, clean_links = clean_artifacts(proj_data_dir)
         
-        split(clean_issues, clean_commits, clean_links, proj_data_dir)
+        #split(clean_issues, clean_commits, clean_links, proj_data_dir)
         no_split(clean_issues, clean_commits, clean_links, proj_data_dir)
+        
