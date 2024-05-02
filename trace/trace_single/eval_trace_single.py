@@ -37,7 +37,7 @@ if __name__ == "__main__":
     logger.info("model loaded")
 
     start_time = time.time()
-    test_dir = os.path.join(args.data_dir, "train")
+    test_dir = os.path.join(args.data_dir, "all-data")
     test_examples = load_examples(test_dir, model=model, num_limit=args.test_num)
     m = test(args, model, test_examples)
     exe_time = time.time() - start_time

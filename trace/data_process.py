@@ -15,6 +15,10 @@ from git_repo_collector import GitRepoCollector, Commit, Issue
 from nltk.tokenize import word_tokenize
 import numpy as np
 
+import warnings
+
+warnings.filterwarnings("ignore", category=FutureWarning)
+
 
 def __read_artifact_dict(file_path, type):
     """
@@ -43,7 +47,8 @@ def __read_artifact_dict(file_path, type):
 
 def __read_artifacts(file_path, type):
     df = pd.read_csv(file_path)
-    df = df.replace(np.nan, regex=True)
+    # df = df.replace(np.nan, regex=True)
+    
     arti = []
     for index, row in df.iterrows():
         if type == 'commit':
@@ -80,6 +85,7 @@ def read_artifacts(proj_data_dir):
     issues = __read_artifacts(issue_file, type="issue")
     commits = __read_artifacts(commit_file, type="commit")
     links = __read_artifacts(link_file, type="link")
+
     return issues, commits, links
 
 
@@ -88,7 +94,7 @@ def clean_artifacts(proj_dir):
     clean_issue_file = os.path.join(proj_dir, "clean_issue.csv")
     clean_commit_file = os.path.join(proj_dir, "clean_commit.csv")
     clean_link_file = os.path.join(proj_dir, "clean_link.csv")
-
+    
     clean_issues = dict()
     clean_commits = dict()
     clean_links = []
@@ -101,6 +107,10 @@ def clean_artifacts(proj_dir):
             iss.desc = re.sub("```.*```", "", iss.desc, flags=re.DOTALL)
             iss.desc = " ".join(word_tokenize(iss.desc))
             iss.comments = " ".join(word_tokenize(iss.comments.split("\n")[0]))  # use only the first comment (title)
+            # if iss.desc == "":
+            #     iss.desc = iss.comments
+            #if iss.desc == "":
+            #    continue
             clean_issues[iss.issue_id] = iss
     else:
         tmp_issues = __read_artifacts(clean_issue_file, type="issue")
@@ -155,7 +165,6 @@ def write_split_chunk(issue, commit, links, output_dir):
     link_file = os.path.join(output_dir, "link_file")
 
     sel_issues, sel_commits = [], []
-    print(issue, links)
     for iss_id, cm_id in links:
         cm = commit[cm_id]
         iss = issue[iss_id]
@@ -187,7 +196,6 @@ def split(issue, commit, links, proj_dir):
 
 def no_split(issue, commit, links, proj_dir):
     all_dir = os.path.join(proj_dir, "all-data")
-    random.shuffle(links)
     train_links = links[:]
     write_split_chunk(issue, commit, train_links, all_dir)
 

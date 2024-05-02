@@ -119,10 +119,18 @@ class Examples:
             NL_index[nl_id] = {F_TOKEN: nl_tks, F_ID: nl_id}
             PL_index[pl_id] = {F_TOKEN: pl_tks, F_ID: pl_id}  # keep space for PL
             rel_index[nl_id].add(pl_id)
-            label_index[nl_id].update(nl_val_dict[nl_tks])
+            #label_index[nl_id].update(nl_val_dict[nl_tks])
             
             nl_id += 1
             pl_id += 1
+            # print(label_index)
+
+        for nl_tk in nl_val_dict:
+            for nl_id in nl_val_dict[nl_tk]:
+                label_index[nl_id].update(nl_val_dict[nl_tk])
+                #print(nl_id, ' s ', nl_val_dict[nl_tk])
+        print(label_index)
+        
         self.label_index = label_index
         return NL_index, PL_index, rel_index
 
@@ -216,7 +224,6 @@ class Examples:
         :return:
         """
         rels = []
-        print(self.rel_index)
         for nid in self.rel_index:
             for pid in self.rel_index[nid]:
                 rels.append((nid, pid))
