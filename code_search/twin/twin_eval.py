@@ -58,6 +58,7 @@ def test(args, model, eval_examples, cache_file, batch_size=1000):
         nl_ids = batch[0]
         pl_ids = batch[1]
         labels = batch[2]
+
         nl_embd, pl_embd = eval_examples.id_pair_to_embd_pair(nl_ids, pl_ids)
 
         with torch.no_grad():

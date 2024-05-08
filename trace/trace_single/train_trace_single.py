@@ -33,7 +33,8 @@ def read_OSS_examples(data_dir):
         cm_text = cm.summary + " " + cm.diffs
         example = {
             "NL": iss_text,
-            "PL": cm_text
+            "PL": cm_text,
+            "issue_id": iss.issue_id
         }
         examples.append(example)
     return examples

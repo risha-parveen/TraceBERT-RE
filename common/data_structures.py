@@ -68,12 +68,11 @@ class Examples:
 
     def __init__(self, raw_examples: List):
         self.NL_index, self.PL_index, self.rel_index = self.__index_exmaple(raw_examples)
-        self.label_index
 
     def __is_positive_case(self, nl_id, pl_id):
-        if nl_id not in self.label_index:
+        if nl_id not in self.rel_index:
             return False
-        rel_pls = set(self.label_index[nl_id])
+        rel_pls = set(self.rel_index[nl_id])
         return pl_id in rel_pls
 
     def __len__(self):
@@ -98,9 +97,19 @@ class Examples:
         nl_id_max = 0
         pl_id_max = 0  
         nl_val_dict = {}
+        mapping_dict = dict()
+
+        for index, r_exp in enumerate(raw_examples):
+            item_issue_id = r_exp.get('issue_id')
+            if item_issue_id in mapping_dict:
+                mapping_dict[item_issue_id].append(index)
+            else:
+                mapping_dict[item_issue_id] = [index]
+
         for r_exp in raw_examples:
             nl_tks = clean_space(r_exp["NL"])
             pl_tks = r_exp["PL"]
+            item_issue_id = r_exp.get('issue_id')
             if nl_tks in reverse_NL_index:
                 nl_id = reverse_NL_index[nl_tks]
             else:
@@ -118,20 +127,16 @@ class Examples:
 
             NL_index[nl_id] = {F_TOKEN: nl_tks, F_ID: nl_id}
             PL_index[pl_id] = {F_TOKEN: pl_tks, F_ID: pl_id}  # keep space for PL
-            rel_index[nl_id].add(pl_id)
-            #label_index[nl_id].update(nl_val_dict[nl_tks])
-            
+
+            if len(mapping_dict[item_issue_id]) > 1:
+                rel_index[mapping_dict[item_issue_id][0]].add(pl_id)
+            else:
+                rel_index[nl_id].add(pl_id)
+
+
             nl_id += 1
             pl_id += 1
-            # print(label_index)
 
-        for nl_tk in nl_val_dict:
-            for nl_id in nl_val_dict[nl_tk]:
-                label_index[nl_id].update(nl_val_dict[nl_tk])
-                #print(nl_id, ' s ', nl_val_dict[nl_tk])
-        print(label_index)
-        
-        self.label_index = label_index
         return NL_index, PL_index, rel_index
 
     def _gen_feature(self, example, tokenizer):
