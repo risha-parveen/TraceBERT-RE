@@ -128,11 +128,11 @@ class Examples:
             NL_index[nl_id] = {F_TOKEN: nl_tks, F_ID: nl_id}
             PL_index[pl_id] = {F_TOKEN: pl_tks, F_ID: pl_id}  # keep space for PL
 
-            if len(mapping_dict[item_issue_id]) > 1:
-                rel_index[mapping_dict[item_issue_id][0]].add(pl_id)
+            mapped_values = mapping_dict[item_issue_id]
+            if len(mapped_values) > 1:
+                rel_index[mapped_values[0]].add(pl_id)
             else:
                 rel_index[nl_id].add(pl_id)
-
 
             nl_id += 1
             pl_id += 1
