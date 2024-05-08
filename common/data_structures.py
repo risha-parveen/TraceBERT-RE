@@ -243,7 +243,8 @@ class Examples:
                     break
                 for pid in pids:
                     label = 1 if self.__is_positive_case(nid, pid) else 0
-                    examples.append((nid, pid, label))
+                    if ((nid, pid, label) not in examples):
+                        examples.append((nid, pid, label))
         return examples
 
     def id_pair_to_embd_pair(self, nl_id_tensor: Tensor, pl_id_tensor: Tensor) -> Tuple[Tensor, Tensor]:

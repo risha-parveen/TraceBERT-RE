@@ -27,7 +27,7 @@ class metrics:
     def sort_df(self, arr, file_name):
         issue_df = pd.read_csv("../trace/data/git_data/EVCommunities/Components/all-data/issue_file", index_col=[0])
         commit_df = pd.read_csv("../trace/data/git_data/EVCommunities/Components/all-data/commit_file", index_col=[0])
-        output_directory = './confusion/EVCommunities/single'
+        output_directory = './confusion/EVCommunities/siamese'
 
         df = pd.DataFrame(arr, columns=['s_id', 't_id', 'p', 'l'])
 
@@ -227,10 +227,10 @@ if __name__ == "__main__":
     ]
     
     # df = pd.DataFrame(test, columns=['s_id', 't_id', 'pred', 'label'])
-    df = pd.read_csv('../trace/trace_single/evaluation/test/EVCommunities eval/raw_result.csv', index_col=[0])
+    df = pd.read_csv('../trace/trace_siamese/evaluation/test/EVCommunities eval/raw_result.csv', index_col=[0])
     m = metrics(df)
     m.output_dir = "./sample_tests"
     # m.precision_recall_curve('test.png')
     print(m.precision_at_K(2))
     print(m.MAP_at_K(2))
-    print(m.sort_f1_details(0.996295154094696))
+    print(m.sort_f1_details(0.0072042024694383144))
