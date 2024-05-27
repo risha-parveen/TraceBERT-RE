@@ -28,30 +28,33 @@ WORKDIR /app/trace/trace_siamese
 #     "--valid_step", "10000", \
 #     "--neg_sampling", "random"]
 
+# /app/output/single_random_03-14 21-42-53_single_model/final_model
+# /app/output/siamese2_random_03-17 16-18-33_siamese_model/final_model
+
 # github data evaluation
 
-CMD ["python", "eval_trace_siamese.py", "--data_dir", "/app/trace/data/git_data/EVCommunities/Components", \
+CMD ["python", "eval_trace_siamese.py", "--data_dir", "/app/trace/data/git_data/niladricts/BusinessTampereTrafficMonitoring", \
     "--model_path", "/app/output/siamese2_random_03-17 16-18-33_siamese_model/final_model", \
-    "--per_gpu_eval_batch_size", "32", "--exp_name", "EVCommunities eval"]
+    "--per_gpu_eval_batch_size", "32", "--exp_name", "trafficmonitoring eval"]
 
 ##################################################################################################################################################################################################################
 
 # pretraining 
-# WORKDIR /app/code_search/single
+#WORKDIR /app/code_search/single
 
-# CMD ["python", "single_train.py", \
-#     "--data_dir", "../data/code_search_net/python", \
-#     "--output_dir", "/app/output", \
-#     "--per_gpu_train_batch_size", "8", \
-#     "--per_gpu_eval_batch_size", "8", \
-#     "--logging_steps", "10", \
-#     "--save_steps", "10000", \
-#     "--gradient_accumulation_steps", "16", \
-#     "--num_train_epochs", "8", \
-#     "--learning_rate", "4e-5", \
-#     "--valid_num", "200", \
-#     "--valid_step", "10000", \
-#     "--neg_sampling", "random"]
+#CMD ["python", "single_train.py", \
+#    "--data_dir", "../data/code_search_net/python", \
+#    "--output_dir", "/app/output", \
+#    "--per_gpu_train_batch_size", "8", \
+#    "--per_gpu_eval_batch_size", "8", \
+#    "--logging_steps", "10", \
+#    "--save_steps", "10000", \
+#    "--gradient_accumulation_steps", "16", \
+#    "--num_train_epochs", "8", \
+#    "--learning_rate", "4e-5", \
+#    "--valid_num", "200", \
+#    "--valid_step", "10000", \
+#    "--neg_sampling", "online"]
 
 #pretraining validation
 
