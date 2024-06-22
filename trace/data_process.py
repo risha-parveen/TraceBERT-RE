@@ -101,6 +101,7 @@ def clean_artifacts(proj_dir):
 
     if not os.path.isfile(clean_issue_file):
         for iss in tqdm(issue):
+            
             if pd.isnull(iss.desc):
                 iss.desc = ""
             iss.desc = re.sub("<!-.*->", "", iss.desc)
@@ -120,8 +121,8 @@ def clean_artifacts(proj_dir):
     if not os.path.isfile(clean_commit_file):
         for cm in tqdm(commit):
             diff_sents = eval(cm.diffs)
-            if len(diff_sents) < 5:
-                continue
+            # if len(diff_sents) < 5:
+            #     continue
             diff_tokens = []
             for sent in diff_sents:
                 sent = sent.strip("+- ")
@@ -139,12 +140,14 @@ def clean_artifacts(proj_dir):
             continue
         clean_links.append(lk)
 
+
     source_ids = set([x[0] for x in clean_links])
     target_ids = set([x[1] for x in clean_links])
 
     # remove artifacts do not have associated links
     remove_source = [x for x in clean_issues.keys() if x not in source_ids]
     remove_target = [x for x in clean_commits.keys() if x not in target_ids]
+
     for rs in remove_source:
         del clean_issues[rs]
     for rt in remove_target:
@@ -206,7 +209,7 @@ if __name__ == "__main__":
     logger.setLevel("INFO")
     # projects = ['dbcli/pgcli']
     # projects = ['pallets/flask']
-    projects = ['EVCommunities/Components']
+    projects = ['niladricts/BusinessTampereTrafficMonitoring']
 
     config = configparser.ConfigParser()
     config.read('credentials.cfg')
