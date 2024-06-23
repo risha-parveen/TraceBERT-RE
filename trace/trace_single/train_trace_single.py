@@ -34,7 +34,8 @@ def read_OSS_examples(data_dir):
         example = {
             "NL": iss_text,
             "PL": cm_text,
-            "issue_id": iss.issue_id
+            "issue_id": iss.issue_id,
+            "commit_id": cm.commit_id
         }
         examples.append(example)
     return examples

@@ -67,7 +67,7 @@ class Examples:
     """
 
     def __init__(self, raw_examples: List):
-        self.NL_index, self.PL_index, self.rel_index = self.__index_exmaple(raw_examples)
+        self.NL_index, self.PL_index, self.rel_index, self.issue_mapping, self.commit_mapping = self.__index_exmaple(raw_examples)
 
     def __is_positive_case(self, nl_id, pl_id):
         if nl_id not in self.rel_index:
@@ -90,6 +90,9 @@ class Examples:
         NL_index = dict()  # find instance by id
         PL_index = dict()
 
+        commit_mapping = dict()
+        issue_mapping = dict()
+
         # hanlde duplicated NL and PL with reversed index
         reverse_NL_index = dict()
         reverse_PL_index = dict()
@@ -105,6 +108,8 @@ class Examples:
                 mapping_dict[item_issue_id].append(index)
             else:
                 mapping_dict[item_issue_id] = [index]
+            issue_mapping[index] = r_exp.get('issue_id')
+            commit_mapping[index] = r_exp.get('commit_id')
 
         for r_exp in raw_examples:
             nl_tks = clean_space(r_exp["NL"])
@@ -137,7 +142,7 @@ class Examples:
             nl_id += 1
             pl_id += 1
 
-        return NL_index, PL_index, rel_index
+        return NL_index, PL_index, rel_index, issue_mapping, commit_mapping
 
     def _gen_feature(self, example, tokenizer):
         feature = tokenizer.encode_plus(example[F_TOKEN], max_length=512,
@@ -234,6 +239,8 @@ class Examples:
                 rels.append((nid, pid))
         rel_dl = DataLoader(rels, batch_size=chunk_size)
         examples = []
+        duplicate_pairs = set()
+
         for batch in rel_dl:
             batch_query_idx = 0
             nids, pids = batch[0].tolist(), batch[1].tolist()
@@ -242,9 +249,13 @@ class Examples:
                 if chunk_query_num != -1 and batch_query_idx > chunk_query_num:
                     break
                 for pid in pids:
-                    label = 1 if self.__is_positive_case(nid, pid) else 0
-                    if ((nid, pid, label) not in examples):
-                        examples.append((nid, pid, label))
+                    if (self.issue_mapping[nid], self.commit_mapping[pid]) not in duplicate_pairs:
+                        duplicate_pairs.add((self.issue_mapping[nid], self.commit_mapping[pid]))
+                        label = 1 if self.__is_positive_case(nid, pid) else 0
+                        
+                        if ((nid, pid, label) not in examples):
+                            examples.append((nid, pid, label))
+
         return examples
 
     def id_pair_to_embd_pair(self, nl_id_tensor: Tensor, pl_id_tensor: Tensor) -> Tuple[Tensor, Tensor]:

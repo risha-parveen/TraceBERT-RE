@@ -209,7 +209,7 @@ if __name__ == "__main__":
     logger.setLevel("INFO")
     # projects = ['dbcli/pgcli']
     # projects = ['pallets/flask']
-    projects = ['niladricts/BusinessTampereTrafficMonitoring']
+    projects = ['tonitaip-2020/postgresql-for-novices1']
 
     config = configparser.ConfigParser()
     config.read('credentials.cfg')
