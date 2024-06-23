@@ -227,7 +227,7 @@ if __name__ == "__main__":
     ]
     
     # df = pd.DataFrame(test, columns=['s_id', 't_id', 'pred', 'label'])
-    df = pd.read_csv('../trace/trace_single/evaluation/test/postgres online evaluation/raw_result.csv', index_col=[0])
+    df = pd.read_csv('../trace/trace_single/evaluation/test/postgres online eval/raw_result.csv', index_col=[0])
     m = metrics(df)
     m.output_dir = "./sample_tests"
     # m.precision_recall_curve('test.png')
