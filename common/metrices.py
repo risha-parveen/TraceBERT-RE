@@ -36,8 +36,9 @@ class metrics:
         merged_commit = pd.merge(df, commit_df, left_on='t_id', right_index=True, how='left')
 
         final_df = pd.merge(merged_issue, merged_commit, left_index=True, right_index=True)
+        print(final_df.keys())
 
-        final_df = final_df[['issue_id', 'commit_id', 'p_x', 'l_x', 'issue_desc', 'issue_comments', 'summary', 'files', 'created_at', 'closed_at', 'commit_time']]
+        final_df = final_df[['issue_id', 'commit_id', 'p_x', 'l_x', 'issue_desc', 'issue_comments', 'summary', 'diff', 'files', 'created_at', 'closed_at', 'commit_time']]
 
         if not os.path.exists(output_directory):
             os.makedirs(output_directory)
