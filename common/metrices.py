@@ -234,4 +234,4 @@ if __name__ == "__main__":
     # m.precision_recall_curve('test.png')
     print(m.precision_at_K(2))
     print(m.MAP_at_K(2))
-    print(m.sort_f1_details(6.51922746328637e-05))
+    print(m.sort_f1_details(2.886468791984953e-05))
