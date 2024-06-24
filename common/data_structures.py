@@ -101,6 +101,7 @@ class Examples:
         pl_id_max = 0  
         nl_val_dict = {}
         mapping_dict = dict()
+        commit_duplicates = dict()
 
         for index, r_exp in enumerate(raw_examples):
             item_issue_id = r_exp.get('issue_id')
@@ -110,6 +111,18 @@ class Examples:
                 mapping_dict[item_issue_id] = [index]
             issue_mapping[index] = r_exp.get('issue_id')
             commit_mapping[index] = r_exp.get('commit_id')
+
+        first_occurrence = {}
+        
+        for index, commit_id in commit_mapping.items():
+            if commit_id in first_occurrence:
+                # If the commit ID is already in first_occurrence, update reverse_duplicates
+                first_index = first_occurrence[commit_id]
+                commit_duplicates[index] = first_index
+            else:
+                # If the commit ID is not in first_occurrence, add it
+                first_occurrence[commit_id] = index
+        print(commit_duplicates)
 
         for r_exp in raw_examples:
             nl_tks = clean_space(r_exp["NL"])
@@ -135,9 +148,16 @@ class Examples:
 
             mapped_values = mapping_dict[item_issue_id]
             if len(mapped_values) > 1:
-                rel_index[mapped_values[0]].add(pl_id)
+                if pl_id in commit_duplicates:
+                    rel_index[mapped_values[0]].add(commit_duplicates[pl_id])
+                else:
+                    rel_index[mapped_values[0]].add(pl_id)
             else:
-                rel_index[nl_id].add(pl_id)
+                if pl_id in commit_duplicates:
+                    rel_index[nl_id].add(commit_duplicates[pl_id])
+                else:
+                    rel_index[nl_id].add(pl_id)
+            print(rel_index)
 
             nl_id += 1
             pl_id += 1
